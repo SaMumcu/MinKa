@@ -8,10 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,16 +23,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.cattishapps.minka.alfasLaboneFontFamily
+import com.cattishapps.minka.ui.theme.alfasLaboneFontFamily
+import com.cattishapps.minka.data.model.DayNoteEntity
+import com.cattishapps.minka.ui.theme.AlphaRed
+import com.cattishapps.minka.ui.theme.Red
 import com.cattishapps.minka.util.Spacing
+import java.time.LocalDate
 
 @Composable
 fun CustomInputDialog(
     showDialog: Boolean,
+    selectedDate: LocalDate,
     onDismiss: () -> Unit,
-    onConfirm: (String, String) -> Unit
+    onConfirm: (DayNoteEntity) -> Unit
 ) {
     var what by remember { mutableStateOf("") }
     var whenTo by remember { mutableStateOf("") }
@@ -44,13 +47,13 @@ fun CustomInputDialog(
     if (showDialog) {
         Dialog(onDismissRequest = onDismiss) {
             Surface(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(Spacing.large),
                 color = Color.White,
-                tonalElevation = 8.dp
+                tonalElevation = Spacing.medium
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(24.dp)
+                        .padding(Spacing.large)
                         .width(300.dp)
                 ) {
                     Text(
@@ -61,7 +64,7 @@ fun CustomInputDialog(
                             fontFamily = alfasLaboneFontFamily
                         )
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(Spacing.medium))
                     TextField(
                         value = what,
                         onValueChange = { what = it },
@@ -69,14 +72,17 @@ fun CustomInputDialog(
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Black,
-                            unfocusedContainerColor = Color(0x4D990000),
-                            disabledContainerColor = Color(0x4D990000),
+                            unfocusedContainerColor = AlphaRed,
+                            disabledContainerColor = AlphaRed,
 
-                            cursorColor = Color(0xFF990000),
-                            focusedTextColor = Color(0xFF990000),
-                            unfocusedTextColor = Color(0xFF990000),
-                            focusedPlaceholderColor = Color.Gray,
-                            unfocusedPlaceholderColor = Color.Gray
+                            cursorColor = Red,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Red,
+                            focusedPlaceholderColor = AlphaRed,
+                            unfocusedPlaceholderColor = AlphaRed
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.None
                         )
                     )
                     Spacer(modifier = Modifier.height(Spacing.medium))
@@ -96,14 +102,17 @@ fun CustomInputDialog(
                         modifier = Modifier.fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Black,
-                            unfocusedContainerColor = Color(0x4D990000),
-                            disabledContainerColor = Color(0x4D990000),
+                            unfocusedContainerColor = AlphaRed,
+                            disabledContainerColor = AlphaRed,
 
-                            cursorColor = Color.Red,
-                            focusedTextColor = Color.Red,
-                            unfocusedTextColor = Color.Red,
-                            focusedPlaceholderColor = Color.Gray,
-                            unfocusedPlaceholderColor = Color.Gray
+                            cursorColor = Red,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Red,
+                            focusedPlaceholderColor = AlphaRed,
+                            unfocusedPlaceholderColor = AlphaRed
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.None
                         )
                     )
                     Spacer(modifier = Modifier.height(Spacing.medium))
@@ -114,14 +123,25 @@ fun CustomInputDialog(
                             color = if (isValid) Color.Black else Color.Black.copy(alpha = 0.3f),
                             fontFamily = alfasLaboneFontFamily
                         ),
-                        modifier = Modifier.align(Alignment.End).then(
-                            if (isValid) Modifier.clickable {
-                                println("addtodb")
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .then(
+                                if (isValid) Modifier.clickable {
+                                    onDismiss()
+                                    onConfirm(
+                                        DayNoteEntity(
+                                            date = whenTo,
+                                            note = what,
+                                            addedDate = selectedDate
+                                        )
+                                    )
+                                    what = ""
+                                    whenTo = ""
 
-                            } else Modifier
-                        )
+                                } else Modifier
+                            )
                     )
-                    Spacer(modifier = Modifier.height(Spacing.large))
+                    Spacer(modifier = Modifier.height(Spacing.medium))
                 }
             }
         }

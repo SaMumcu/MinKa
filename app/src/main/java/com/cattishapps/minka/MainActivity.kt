@@ -4,53 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.cattishapps.minka.ui.dayscreen.DayScreen
-import com.cattishapps.minka.util.Spacing
+import com.cattishapps.minka.ui.weekscreen.WeekScreen
+import com.cattishapps.minka.ui.mainscreen.YearCalendar
 import com.cattishapps.minka.ui.theme.MinKaTheme
 import com.cattishapps.minka.util.Screen
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
-import java.time.YearMonth
-import java.time.Month
-import java.time.format.TextStyle
-import java.util.Locale
 
-val alfasLaboneFontFamily = FontFamily(
-    Font(R.font.alfaslaboneregular, FontWeight.Normal)
-)
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,179 +40,30 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(Screen.MonthScreen.route) {
                                 YearCalendar(2025, onDayClick = { itemId ->
-                                    navController.navigate(Screen.DayScreen.createRoute(itemId))
+                                    navController.navigate(Screen.WeekScreen.createRoute(itemId))
                                 })
                             }
 
                             composable(
-                                route = Screen.DayScreen.route,
-                                arguments = listOf(navArgument("date") { type = NavType.StringType })
+                                route = Screen.WeekScreen.route,
+                                arguments = listOf(navArgument("date") {
+                                    type = NavType.StringType
+                                })
                             ) { backStackEntry ->
                                 val dateString = backStackEntry.arguments?.getString("date")
                                 val date = dateString?.let { LocalDate.parse(it) }
 
                                 if (date != null) {
-                                    DayScreen(navController = navController, selectedDate = date.toString())
+                                    WeekScreen(
+                                        navController = navController,
+                                        selectedDate = date.toString()
+                                    )
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun YearCalendar(year: Int, onDayClick: (LocalDate) -> Unit) {
-    val selectedMonth: Int = LocalDate.now().monthValue
-    val listState = rememberLazyListState()
-
-    LaunchedEffect(selectedMonth) {
-        // selectedMonth - 1 çünkü liste sıfır tabanlı index kullanıyor
-        listState.scrollToItem(selectedMonth - 1)
-    }
-
-    val months = (1..12).toList()
-
-    LazyColumn(
-        state = listState,
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
-    ) {
-        items(months) { month ->
-            CurrentMonth(year = year, currentMonth = month)
-            MonthCalendar(year = year, month = month, onDayClick = onDayClick)
-        }
-    }
-}
-
-@Composable
-fun CurrentMonth(
-    year: Int,
-    currentMonth: Int,
-    modifier: Modifier = Modifier,
-    today: LocalDate = LocalDate.now()
-) {
-    val monthName = Month.of(currentMonth).getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-
-    val isThisMonth =
-        (year == today.year && currentMonth == today.monthValue)
-
-    Text(
-        text = monthName,
-        style = if (isThisMonth) {
-            MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF990000), // koyu kırmızı
-                fontFamily = alfasLaboneFontFamily
-            )
-        } else {
-            MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                fontFamily = alfasLaboneFontFamily
-            )
-        },
-        modifier = modifier.padding(horizontal = Spacing.medium),
-        fontFamily = alfasLaboneFontFamily
-    )
-}
-
-@Composable
-fun MonthCalendar(
-    year: Int,
-    month: Int, // 1 - 12 arası,
-    today: LocalDate = LocalDate.now(),
-    onDayClick: (LocalDate) -> Unit
-) {
-
-    Divider()
-    HorizontalDaysInWeek()
-
-    val daysInMonth = YearMonth.of(year, month).lengthOfMonth()
-
-    // Ayın 1. günü haftanın kaçıncı günü? (1 = Pazartesi)
-    val firstDayOfWeek = LocalDate.of(year, month, 1).dayOfWeek.value
-    // Kotlin ve java.time'da Pazartesi=1, Pazar=7
-
-    // Haftanın 7 gününe göre boşluk sayısı (Pazartesi'den önce boş)
-    val emptyCells = firstDayOfWeek - 1
-
-    // Toplam hücre sayısı (boş + günler)
-    val totalCells = emptyCells + daysInMonth
-
-    // Satır sayısı (7 sütun)
-    val rows = (totalCells + 6) / 7
-
-    Column {
-        for (row in 0 until rows) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                for (col in 0 until 7) {
-                    val cellIndex = row * 7 + col
-                    val dayNumber = cellIndex - emptyCells + 1
-                    val isToday =
-                        (year == today.year && month == today.monthValue && dayNumber == today.dayOfMonth)
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1f)
-                            .clickable {
-                                val date = LocalDate.of(year, month, dayNumber)
-                                onDayClick(date)
-                            },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        if (cellIndex in emptyCells..<totalCells) {
-                            Text(
-                                text = "${cellIndex - emptyCells + 1}",
-                                style = if (isToday) {
-                                    MaterialTheme.typography.headlineMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF990000), // koyu kırmızı
-                                        fontFamily = alfasLaboneFontFamily
-                                    )
-                                } else {
-                                    MaterialTheme.typography.headlineMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.Black,
-                                        fontFamily = alfasLaboneFontFamily
-                                    )
-                                },
-                            )
-                        } else {
-                            // boş hücre
-                            Text(text = "")
-                        }
-                    }
-                }
-            }
-        }
-    }
-    Divider()
-}
-
-@Composable
-fun Divider() {
-    HorizontalDivider(
-        modifier = Modifier
-            .padding(vertical = Spacing.medium)
-            .fillMaxWidth()
-            .height(1.dp),
-        color = Color.Black
-    )
-}
-
-@Composable
-fun HorizontalDaysInWeek() {
-    val daysOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        daysOfWeek.forEach { day ->
-            Text(text = day, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
         }
     }
 }

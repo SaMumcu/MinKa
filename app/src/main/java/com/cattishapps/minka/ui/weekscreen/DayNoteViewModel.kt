@@ -1,0 +1,49 @@
+package com.cattishapps.minka.ui.weekscreen
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.cattishapps.minka.data.model.DayNoteEntity
+import com.cattishapps.minka.domain.AddNoteUseCase
+import com.cattishapps.minka.domain.GetAllNotesUseCase
+import com.cattishapps.minka.domain.GetNotesByDateUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import javax.inject.Inject
+
+@HiltViewModel
+class DayNoteViewModel @Inject constructor(
+    private val getNotesByDateUseCase: GetNotesByDateUseCase,
+    private val addNoteUseCase: AddNoteUseCase,
+    private val getAllNotesUseCase: GetAllNotesUseCase
+) : ViewModel() {
+
+    private val _notes = MutableStateFlow<List<DayNoteEntity>>(emptyList())
+    val notes: StateFlow<List<DayNoteEntity>> = _notes.asStateFlow()
+
+    fun getAllNotes() {
+        viewModelScope.launch {
+            getAllNotesUseCase().collect { notesList ->
+                _notes.value = notesList
+            }
+        }
+    }
+
+    fun loadNotes(date: LocalDate) {
+        viewModelScope.launch {
+            getNotesByDateUseCase(date).collect { notesList ->
+                _notes.value = notesList
+            }
+        }
+    }
+
+    fun addNote(note: DayNoteEntity) {
+        viewModelScope.launch {
+            addNoteUseCase(note)
+            loadNotes(note.addedDate)
+        }
+    }
+}
