@@ -25,7 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import com.cattishapps.minka.ui.Divider
 import com.cattishapps.minka.ui.theme.Red
 import com.cattishapps.minka.ui.theme.alfasLaboneFontFamily
+import com.cattishapps.minka.util.MONTHS_IN_YEAR
 import com.cattishapps.minka.util.Spacing
+import com.cattishapps.minka.util.WEEK_DAYS
 import java.time.LocalDate
 import java.time.Month
 import java.time.YearMonth
@@ -41,7 +43,7 @@ fun YearCalendar(year: Int, onDayClick: (LocalDate) -> Unit) {
         listState.scrollToItem(selectedMonth - 1)
     }
 
-    val months = (1..12).toList()
+    val months = (1..MONTHS_IN_YEAR).toList()
 
     LazyColumn(
         state = listState,
@@ -111,13 +113,13 @@ fun MonthCalendar(
     val totalCells = emptyCells + daysInMonth
 
     // Satır sayısı (7 sütun)
-    val rows = (totalCells + 6) / 7
+    val rows = (totalCells + 6) / WEEK_DAYS
 
     Column {
         for (row in 0 until rows) {
             Row(modifier = Modifier.fillMaxWidth()) {
-                for (col in 0 until 7) {
-                    val cellIndex = row * 7 + col
+                for (col in 0 until WEEK_DAYS) {
+                    val cellIndex = row * WEEK_DAYS + col
                     val dayNumber = cellIndex - emptyCells + 1
                     val isToday =
                         (year == today.year && month == today.monthValue && dayNumber == today.dayOfMonth)

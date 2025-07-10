@@ -43,6 +43,7 @@ import com.cattishapps.minka.ui.Divider
 import com.cattishapps.minka.ui.dialog.CustomInputDialog
 import com.cattishapps.minka.ui.theme.Red
 import com.cattishapps.minka.util.Spacing
+import com.cattishapps.minka.util.WEEK_DAYS
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -51,15 +52,16 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun DayCard(
     selectedDate: LocalDate, label: String,
-    dayNotes: List<DayNoteEntity>, snackbarHostState: SnackbarHostState,
+    dayNotes: List<DayNoteEntity>,
+    snackbarHostState: SnackbarHostState,
+    isInitiallyExpanded: Boolean = false
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(isInitiallyExpanded) }
     var showDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     val viewModel: DayNoteViewModel = hiltViewModel()
 
-    Divider(padding = 0.dp)
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -139,7 +141,7 @@ fun DayCard(
 
 fun getWeekDates(selectedDate: LocalDate): List<LocalDate> {
     val startOfWeek = selectedDate.with(DayOfWeek.MONDAY)
-    return (0..6).map { startOfWeek.plusDays(it.toLong()) }
+    return (0..<WEEK_DAYS).map { startOfWeek.plusDays(it.toLong()) }
 }
 
 @Composable
@@ -181,7 +183,17 @@ fun WeekScreen(navController: NavController, selectedDate: String) {
                     it.addedDate == date
                 }
 
-                DayCard(date, label = label, dayNotes, snackbarHostState = snackbarHostState)
+                Divider(padding = 0.dp)
+                DayCard(
+                    date,
+                    label = label,
+                    dayNotes,
+                    snackbarHostState = snackbarHostState,
+                    isInitiallyExpanded = (date == localDate)
+                )
+                if (index == WEEK_DAYS - 1) {
+                    Divider(padding = 0.dp)
+                }
             }
         }
     }
