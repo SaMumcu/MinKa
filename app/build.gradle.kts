@@ -70,6 +70,12 @@ dependencies {
     implementation("androidx.room:room-ktx:2.5.2")
     ksp("androidx.room:room-compiler:2.5.2")
 
+    // coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

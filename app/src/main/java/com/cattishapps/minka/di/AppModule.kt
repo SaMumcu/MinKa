@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.cattishapps.minka.data.dao.DayNoteDao
 import com.cattishapps.minka.data.repository.DayNoteRepository
 import com.cattishapps.minka.db.AppDatabase
+import com.cattishapps.minka.db.MIGRATION_1_2
 import com.cattishapps.minka.domain.AddNoteUseCase
 import com.cattishapps.minka.domain.GetAllNotesUseCase
 import com.cattishapps.minka.domain.GetNotesByDateUseCase
@@ -24,6 +25,7 @@ object AppModule {
     fun providesLocalDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "day_note_db")
             .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
 

@@ -1,16 +1,24 @@
 package com.cattishapps.minka.ui.weekscreen
 
+import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -31,8 +39,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -83,19 +95,30 @@ fun DayCard(
             ) {
                 Column {
                     dayNotes.forEach { note ->
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                text = note.date.format(DateTimeFormatter.ofPattern("HH:mm")),
-                                modifier = Modifier
-                                    .padding(top = Spacing.medium)
-                                    .weight(2f)
-                            )
-                            Text(
-                                text = note.note,
-                                modifier = Modifier
-                                    .padding(top = Spacing.medium)
-                                    .weight(3f)
-                            )
+                        Column {
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                Text(
+                                    text = note.date.format(DateTimeFormatter.ofPattern("HH:mm")),
+                                    modifier = Modifier
+                                        .padding(top = Spacing.medium)
+                                        .weight(2f)
+                                )
+                                Text(
+                                    text = note.note,
+                                    modifier = Modifier
+                                        .padding(top = Spacing.medium)
+                                        .weight(3f)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(Spacing.medium))
+                            if (note.imageUris.isNotEmpty()) {
+                                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    items(note.imageUris) { uri ->
+
+                                        ImageFromContentUri(uri = uri)
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -197,5 +220,31 @@ fun WeekScreen(navController: NavController, selectedDate: String) {
             }
         }
     }
+}
+
+@Composable
+fun ImageFromContentUri(uri: Uri) {
+    val context = LocalContext.current
+    val bitmap by remember(uri) {
+        mutableStateOf(
+            try {
+                val inputStream = context.contentResolver.openInputStream(uri)
+                BitmapFactory.decodeStream(inputStream)
+            } catch (e: Exception) {
+                null
+            }
+        )
+    }
+
+    bitmap?.let {
+        Image(
+            bitmap = it.asImageBitmap(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(100.dp)
+                .clip(RoundedCornerShape(8.dp))
+        )
+    } ?: Text("Failed to load photo")
 }
 
