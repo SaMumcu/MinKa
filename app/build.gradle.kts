@@ -76,6 +76,12 @@ dependencies {
     // permissions
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
+    // clarity
+    implementation("com.microsoft.clarity:clarity-compose:3.4.1")
+
+    // startup
+    implementation("androidx.startup:startup-runtime:1.1.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
