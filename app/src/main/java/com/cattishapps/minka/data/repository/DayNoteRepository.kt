@@ -14,4 +14,6 @@ class DayNoteRepository(private val dao: DayNoteDao) {
     suspend fun clearAll() = dao.clearAll()
 
     suspend fun addNote(note: DayNoteEntity) = dao.insertOrUpdate(note)
+
+    suspend fun deleteNoteById(id: Int) = dao.deleteById(id)
 }

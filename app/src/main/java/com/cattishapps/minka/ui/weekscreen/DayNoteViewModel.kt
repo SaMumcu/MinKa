@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cattishapps.minka.data.model.DayNoteEntity
 import com.cattishapps.minka.domain.AddNoteUseCase
+import com.cattishapps.minka.domain.DeleteNoteUseCase
 import com.cattishapps.minka.domain.GetAllNotesUseCase
 import com.cattishapps.minka.domain.GetNotesByDateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class DayNoteViewModel @Inject constructor(
     private val getNotesByDateUseCase: GetNotesByDateUseCase,
     private val addNoteUseCase: AddNoteUseCase,
-    private val getAllNotesUseCase: GetAllNotesUseCase
+    private val getAllNotesUseCase: GetAllNotesUseCase,
+    private val deleteNoteByIdUseCase: DeleteNoteUseCase
 ) : ViewModel() {
 
     private val _notes = MutableStateFlow<List<DayNoteEntity>>(emptyList())
@@ -44,6 +46,12 @@ class DayNoteViewModel @Inject constructor(
         viewModelScope.launch {
             addNoteUseCase(note)
             loadNotes(note.addedDate)
+        }
+    }
+
+    fun deleteNoteById(noteId: Int) {
+        viewModelScope.launch {
+            deleteNoteByIdUseCase(noteId)
         }
     }
 }

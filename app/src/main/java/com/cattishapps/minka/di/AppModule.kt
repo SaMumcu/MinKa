@@ -7,6 +7,7 @@ import com.cattishapps.minka.data.repository.DayNoteRepository
 import com.cattishapps.minka.db.AppDatabase
 import com.cattishapps.minka.db.MIGRATION_1_2
 import com.cattishapps.minka.domain.AddNoteUseCase
+import com.cattishapps.minka.domain.DeleteNoteUseCase
 import com.cattishapps.minka.domain.GetAllNotesUseCase
 import com.cattishapps.minka.domain.GetNotesByDateUseCase
 import dagger.Module
@@ -65,5 +66,13 @@ object AppModule {
         repository: DayNoteRepository
     ): GetAllNotesUseCase {
         return GetAllNotesUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesDeleteNoteUseCase(
+        repository: DayNoteRepository
+    ): DeleteNoteUseCase {
+        return DeleteNoteUseCase(repository)
     }
 }

@@ -20,6 +20,9 @@ interface DayNoteDao {
     @Query("SELECT * FROM day_note")
     fun getAll(): Flow<List<DayNoteEntity>>
 
+    @Query("DELETE FROM day_note WHERE id = :id")
+    suspend fun deleteById(id: Int)
+
     @Query("DELETE FROM day_note")
     suspend fun clearAll()
 }

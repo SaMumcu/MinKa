@@ -49,7 +49,7 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CustomInputDialog(
+fun AddNoteForDayDialog(
     showDialog: Boolean,
     selectedDate: LocalDate,
     onDismiss: () -> Unit,

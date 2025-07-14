@@ -4,16 +4,21 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -38,6 +43,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -45,14 +51,18 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.cattishapps.minka.R
 import com.cattishapps.minka.ui.theme.alfasLaboneFontFamily
 import com.cattishapps.minka.data.model.DayNoteEntity
 import com.cattishapps.minka.ui.Divider
-import com.cattishapps.minka.ui.dialog.CustomInputDialog
+import com.cattishapps.minka.ui.dialog.AddNoteForDayDialog
+import com.cattishapps.minka.ui.dialog.DeleteNoteDialog
+import com.cattishapps.minka.ui.theme.AlphaRed
 import com.cattishapps.minka.ui.theme.Red
 import com.cattishapps.minka.util.Spacing
 import com.cattishapps.minka.util.WEEK_DAYS
@@ -70,6 +80,8 @@ fun DayCard(
 ) {
     var expanded by remember { mutableStateOf(isInitiallyExpanded) }
     var showDialog by remember { mutableStateOf(false) }
+    var showOnDeleteDialog by remember { mutableStateOf(false) }
+    var selectedNoteId by remember { mutableStateOf<Int?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
     val viewModel: DayNoteViewModel = hiltViewModel()
@@ -93,22 +105,55 @@ fun DayCard(
             AnimatedVisibility(
                 visible = expanded
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.padding(Spacing.medium)
+                ) {
                     dayNotes.forEach { note ->
                         Column {
-                            Row(modifier = Modifier.fillMaxWidth()) {
-                                Text(
-                                    text = note.date.format(DateTimeFormatter.ofPattern("HH:mm")),
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(
+                                        width = 1.dp,
+                                        color = Color.Black.copy(alpha = 0.2f),
+                                        shape = RoundedCornerShape(Spacing.medium)
+                                    )
+                                    .background(
+                                        AlphaRed,
+                                        shape = RoundedCornerShape(Spacing.medium)
+                                    )
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.outline_close_small_24),
+                                    contentDescription = "Options",
                                     modifier = Modifier
-                                        .padding(top = Spacing.medium)
-                                        .weight(2f)
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 6.dp, y = (-6).dp)
+                                        .size(Spacing.large)
+                                        .clickable {
+                                            showOnDeleteDialog = true
+                                            selectedNoteId = note.id
+                                        }
                                 )
-                                Text(
-                                    text = note.note,
+
+                                Column(
                                     modifier = Modifier
-                                        .padding(top = Spacing.medium)
-                                        .weight(3f)
-                                )
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp)
+                                ) {
+                                    Row {
+                                        IconWithText(
+                                            text = note.date.format(DateTimeFormatter.ofPattern("HH:mm")),
+                                            iconResId = R.drawable.outline_calendar_clock_24
+                                        )
+                                    }
+                                    Row {
+                                        IconWithText(
+                                            text = note.note,
+                                            iconResId = R.drawable.outline_architecture_24
+                                        )
+                                    }
+                                }
                             }
                             Spacer(modifier = Modifier.height(Spacing.medium))
                             if (note.imageUris.isNotEmpty()) {
@@ -131,7 +176,7 @@ fun DayCard(
                         IconButton(
                             onClick = { showDialog = true },
                             modifier = Modifier
-                                .size(24.dp)
+                                .size(Spacing.large)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
@@ -141,7 +186,7 @@ fun DayCard(
                         }
                     }
 
-                    CustomInputDialog(
+                    AddNoteForDayDialog(
                         showDialog = showDialog,
                         selectedDate = selectedDate,
                         onDismiss = { showDialog = false },
@@ -156,6 +201,25 @@ fun DayCard(
                             }
                         }
                     )
+                    if (showOnDeleteDialog) {
+                        selectedNoteId?.let { noteId ->
+                            DeleteNoteDialog(
+                                showDialog = true,
+                                noteId = noteId,
+                                message = "Delete?",
+                                buttonText = "Yes.",
+                                onDeleteConfirm = { noteId ->
+                                    viewModel.deleteNoteById(noteId)
+                                    showOnDeleteDialog = false
+                                    selectedNoteId = null
+                                },
+                                onDismiss = {
+                                    showOnDeleteDialog = false
+                                    selectedNoteId = null
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -165,6 +229,27 @@ fun DayCard(
 fun getWeekDates(selectedDate: LocalDate): List<LocalDate> {
     val startOfWeek = selectedDate.with(DayOfWeek.MONDAY)
     return (0..<WEEK_DAYS).map { startOfWeek.plusDays(it.toLong()) }
+}
+
+@Composable
+fun IconWithText(text: String, iconResId: Int) {
+    Row(
+        modifier = Modifier
+            .padding(Spacing.small)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = iconResId),
+            contentDescription = "Calendar icon",
+            modifier = Modifier.size(Spacing.large)
+        )
+        Spacer(modifier = Modifier.width(Spacing.small))
+        Text(
+            text = text,
+            modifier = Modifier
+        )
+    }
 }
 
 @Composable
@@ -242,8 +327,9 @@ fun ImageFromContentUri(uri: Uri) {
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
+                .padding(bottom = Spacing.large)
                 .size(100.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(Spacing.medium))
         )
     } ?: Text("Failed to load photo")
 }
