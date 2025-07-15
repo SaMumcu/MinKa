@@ -31,11 +31,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
+import com.cattishapps.minka.R
 import com.cattishapps.minka.ui.theme.alfasLaboneFontFamily
 import com.cattishapps.minka.data.model.DayNoteEntity
 import com.cattishapps.minka.ui.imagepicker.MultiImagePickerLauncher
@@ -81,7 +83,7 @@ fun AddNoteForDayDialog(
                         .width(300.dp)
                 ) {
                     Text(
-                        text = "What?",
+                        text = stringResource(R.string.question_what),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
@@ -111,7 +113,7 @@ fun AddNoteForDayDialog(
                     )
                     Spacer(modifier = Modifier.height(Spacing.medium))
                     Text(
-                        text = "When?",
+                        text = stringResource(R.string.question_when),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
@@ -146,7 +148,7 @@ fun AddNoteForDayDialog(
                         },
                         trigger = { launchPicker ->
                             Text(
-                                text = "Image?",
+                                text = stringResource(R.string.question_image),
                                 style = MaterialTheme.typography.headlineMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black.copy(alpha = 0.3f),
