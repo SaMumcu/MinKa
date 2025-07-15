@@ -128,8 +128,8 @@ fun DayCard(
                                     contentDescription = "Options",
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
-                                        .offset(x = 6.dp, y = (-6).dp)
-                                        .size(Spacing.large)
+                                        .offset(x = 10.dp, y = (-10).dp)
+                                        .size(Spacing.xLarge)
                                         .clickable {
                                             showOnDeleteDialog = true
                                             selectedNoteId = note.id
@@ -176,7 +176,7 @@ fun DayCard(
                         IconButton(
                             onClick = { showDialog = true },
                             modifier = Modifier
-                                .size(Spacing.large)
+                                .size(Spacing.xLarge)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
