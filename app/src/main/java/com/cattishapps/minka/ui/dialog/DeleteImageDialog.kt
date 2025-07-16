@@ -1,21 +1,24 @@
 package com.cattishapps.minka.ui.dialog
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
+import com.cattishapps.minka.data.model.DayNoteEntity
 
 @Composable
-fun DeleteNoteDialog(
+fun DeleteImageDialog(
     showDialog: Boolean,
-    noteId: Int,
+    originalNote: DayNoteEntity,
+    imageUri: Uri,
     message: String,
     buttonText: String,
-    onDeleteConfirm: (Int) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onDeleteImageConfirm: (DayNoteEntity, Uri) -> Unit,
 ) {
     BaseDeleteDialog(
         showDialog = showDialog,
         message = message,
         buttonText = buttonText,
-        onConfirm = { onDeleteConfirm(noteId) },
+        onConfirm = { onDeleteImageConfirm(originalNote, imageUri) },
         onDismiss = onDismiss
     )
 }

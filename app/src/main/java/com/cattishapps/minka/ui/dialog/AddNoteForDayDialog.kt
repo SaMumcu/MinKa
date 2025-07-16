@@ -185,7 +185,7 @@ fun AddNoteForDayDialog(
 
                     Spacer(modifier = Modifier.height(Spacing.medium))
                     Text(
-                        text = "Add.",
+                        text = stringResource(R.string.add),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = if (isValid) Color.Black else Color.Black.copy(alpha = 0.3f),

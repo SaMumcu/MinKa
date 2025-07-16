@@ -1,6 +1,5 @@
 package com.cattishapps.minka.ui.weekscreen
 
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -10,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,12 +45,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,8 +57,11 @@ import com.cattishapps.minka.R
 import com.cattishapps.minka.ui.theme.alfasLaboneFontFamily
 import com.cattishapps.minka.data.model.DayNoteEntity
 import com.cattishapps.minka.ui.Divider
+import com.cattishapps.minka.ui.components.ImageFromContentUri
 import com.cattishapps.minka.ui.dialog.AddNoteForDayDialog
+import com.cattishapps.minka.ui.dialog.DeleteImageDialog
 import com.cattishapps.minka.ui.dialog.DeleteNoteDialog
+import com.cattishapps.minka.ui.dialog.UpdateNoteForDayDialog
 import com.cattishapps.minka.ui.theme.AlphaRed
 import com.cattishapps.minka.ui.theme.Red
 import com.cattishapps.minka.util.Spacing
@@ -81,7 +80,11 @@ fun DayCard(
 ) {
     var expanded by remember { mutableStateOf(isInitiallyExpanded) }
     var showDialog by remember { mutableStateOf(false) }
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    var selectedNote by remember { mutableStateOf<DayNoteEntity?>(null) }
+    var uriToDelete by remember { mutableStateOf<Uri?>(null) }
     var showOnDeleteDialog by remember { mutableStateOf(false) }
+    var showOnImageDeleteDialog by remember { mutableStateOf(false) }
     var selectedNoteId by remember { mutableStateOf<Int?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -139,8 +142,12 @@ fun DayCard(
 
                                 Column(
                                     modifier = Modifier
+                                        .clickable {
+                                            selectedNote = note
+                                            showUpdateDialog = true
+                                        }
+                                        .padding(Spacing.medium)
                                         .fillMaxWidth()
-                                        .padding(top = 8.dp)
                                 ) {
                                     Row {
                                         IconWithText(
@@ -158,10 +165,18 @@ fun DayCard(
                             }
                             Spacer(modifier = Modifier.height(Spacing.medium))
                             if (note.imageUris.isNotEmpty()) {
-                                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                LazyRow(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    contentPadding = PaddingValues(end = 16.dp)
+                                ) {
                                     items(note.imageUris) { uri ->
-
-                                        ImageFromContentUri(uri = uri)
+                                        ImageFromContentUri(
+                                            uri = uri,
+                                            onRemove = {
+                                                showOnImageDeleteDialog = true
+                                                uriToDelete = uri
+                                                selectedNote = note
+                                            })
                                     }
                                 }
                             }
@@ -202,6 +217,17 @@ fun DayCard(
                             }
                         }
                     )
+                    selectedNote?.let { it ->
+                        UpdateNoteForDayDialog(
+                            showDialog = showUpdateDialog,
+                            originalNote = it,
+                            onDismiss = { showUpdateDialog = false },
+                            onUpdate = { updatedNote ->
+                                viewModel.updateNote(updatedNote)
+                            }
+                        )
+                    }
+
                     if (showOnDeleteDialog) {
                         selectedNoteId?.let { noteId ->
                             DeleteNoteDialog(
@@ -219,6 +245,31 @@ fun DayCard(
                                     selectedNoteId = null
                                 }
                             )
+                        }
+                    }
+                    if (showOnImageDeleteDialog) {
+                        selectedNote?.let { currentNote ->
+                            uriToDelete?.let { it ->
+                                DeleteImageDialog(
+                                    showDialog = true,
+                                    originalNote = currentNote,
+                                    imageUri = it,
+                                    message = stringResource(id = R.string.question_delete),
+                                    buttonText = stringResource(id = R.string.yes),
+                                    onDeleteImageConfirm = { note, uri ->
+                                        val updatedNote = note.copy(
+                                            imageUris = note.imageUris.filterNot { it == uri }
+                                        )
+                                        viewModel.updateNote(updatedNote)
+                                        showOnImageDeleteDialog = false
+                                        uriToDelete = null
+                                    },
+                                    onDismiss = {
+                                        showOnImageDeleteDialog = false
+                                        uriToDelete = null
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -306,32 +357,5 @@ fun WeekScreen(navController: NavController, selectedDate: String) {
             }
         }
     }
-}
-
-@Composable
-fun ImageFromContentUri(uri: Uri) {
-    val context = LocalContext.current
-    val bitmap by remember(uri) {
-        mutableStateOf(
-            try {
-                val inputStream = context.contentResolver.openInputStream(uri)
-                BitmapFactory.decodeStream(inputStream)
-            } catch (e: Exception) {
-                null
-            }
-        )
-    }
-
-    bitmap?.let {
-        Image(
-            bitmap = it.asImageBitmap(),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .padding(bottom = Spacing.large)
-                .size(100.dp)
-                .clip(RoundedCornerShape(Spacing.medium))
-        )
-    } ?: Text("Failed to load photo")
 }
 

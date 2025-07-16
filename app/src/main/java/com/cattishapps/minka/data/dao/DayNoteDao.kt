@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.cattishapps.minka.data.model.DayNoteEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -22,6 +23,9 @@ interface DayNoteDao {
 
     @Query("DELETE FROM day_note WHERE id = :id")
     suspend fun deleteById(id: Int)
+
+    @Update
+    suspend fun updateNote(note: DayNoteEntity)
 
     @Query("DELETE FROM day_note")
     suspend fun clearAll()
