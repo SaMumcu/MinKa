@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MinKa</string>
+    <string name="question_delete">Silinsin mi?</string>
+    <string name="yes">Evet.</string>
+    <string name="question_what">Ne?</string>
+    <string name="question_when">Ne zaman?</string>
+    <string name="question_image">Resim?</string>
+    <string name="add">Ekle.</string>
+    <string name="update">Güncelle.</string>
+</resources>

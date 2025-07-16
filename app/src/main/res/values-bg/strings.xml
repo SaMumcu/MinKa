@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MinKa</string>
+    <string name="question_delete">Изтриване?</string>
+    <string name="yes">Да.</string>
+    <string name="question_what">Какво?</string>
+    <string name="question_when">Кога?</string>
+    <string name="question_image">Изображение?</string>
+    <string name="add">Добави.</string>
+    <string name="update">Обнови.</string>
+</resources>
