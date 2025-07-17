@@ -8,4 +8,14 @@
     <string name="question_image">Resim?</string>
     <string name="add">Ekle.</string>
     <string name="update">Güncelle.</string>
+
+    <string-array name="days_of_week">
+        <item>Pz</item>
+        <item>Sa</item>
+        <item>Çş</item>
+        <item>Pe</item>
+        <item>Cu</item>
+        <item>Ct</item>
+        <item>Pa</item>
+    </string-array>
 </resources>

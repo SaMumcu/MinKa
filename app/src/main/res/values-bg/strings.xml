@@ -8,4 +8,14 @@
     <string name="question_image">Изображение?</string>
     <string name="add">Добави.</string>
     <string name="update">Обнови.</string>
+
+    <string-array name="days_of_week">
+        <item>Пн</item>
+        <item>Вт</item>
+        <item>Ср</item>
+        <item>Чт</item>
+        <item>Пт</item>
+        <item>Сб</item>
+        <item>Нд</item>
+    </string-array>
 </resources>

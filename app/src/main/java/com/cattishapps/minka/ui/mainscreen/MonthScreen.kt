@@ -1,7 +1,6 @@
 package com.cattishapps.minka.ui.mainscreen
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,8 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import com.cattishapps.minka.ui.Divider
+import com.cattishapps.minka.ui.components.HorizontalDaysInWeek
 import com.cattishapps.minka.ui.theme.Red
 import com.cattishapps.minka.ui.theme.alfasLaboneFontFamily
 import com.cattishapps.minka.util.MONTHS_IN_YEAR
@@ -64,7 +63,7 @@ fun CurrentMonth(
     modifier: Modifier = Modifier,
     today: LocalDate = LocalDate.now()
 ) {
-    val monthName = Month.of(currentMonth).getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
+    val monthName = Month.of(currentMonth).getDisplayName(TextStyle.SHORT, Locale.getDefault())
 
     val isThisMonth =
         (year == today.year && currentMonth == today.monthValue)
@@ -160,17 +159,4 @@ fun MonthCalendar(
         }
     }
     Divider()
-}
-
-@Composable
-fun HorizontalDaysInWeek() {
-    val daysOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        daysOfWeek.forEach { day ->
-            Text(text = day, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-        }
-    }
 }
