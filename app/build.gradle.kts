@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -81,6 +83,11 @@ dependencies {
 
     // startup
     implementation("androidx.startup:startup-runtime:1.1.1")
+
+    // firebase
+    implementation(libs.firebase.bom)
+    implementation(libs.firebase.common.ktx)
+    implementation(libs.firebase.crashlytics)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
