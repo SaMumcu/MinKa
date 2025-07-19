@@ -5,17 +5,34 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-keep class androidx.room.** { *; }
+-keepclassmembers class * {
+    @androidx.room.* <methods>;
+    @androidx.room.* <fields>;
+}
+-keep class * implements androidx.room.RoomDatabase
+-keep class * implements androidx.room.RoomDatabase$Callback
+-keep @androidx.room.Dao class *
+-keepclassmembers class * {
+    @androidx.room.Dao <methods>;
+}
+
+-keep class dagger.hilt.** { *; }
+-dontwarn dagger.hilt.**
+-keep class javax.inject.** { *; }
+-keep class dagger.** { *; }
+-dontwarn javax.inject.**
+-keepattributes RuntimeVisibleAnnotations
+-keep class com.cattishapps.minka.**_Factory { *; }
+-keep class com.cattishapps.minka.**_MembersInjector { *; }
+
+-keep class * extends dagger.hilt.android.internal.lifecycle.HiltViewModelFactory { *; }
+
+-keep class com.cattishapps.MinKaApp { *; }
+
