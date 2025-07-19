@@ -64,29 +64,29 @@ dependencies {
     implementation(libs.androidx.nav)
 
     //Dagger - Hilt
-    implementation("com.google.dagger:hilt-android:2.48")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-    ksp("com.google.dagger:hilt-compiler:2.48")
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
 
     // Room
-    implementation("androidx.room:room-runtime:2.5.2")
-    implementation("androidx.room:room-ktx:2.5.2")
-    ksp("androidx.room:room-compiler:2.5.2")
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     // coil
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(libs.coil.compose)
 
     // permissions
-    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation(libs.accompanist.permissions)
 
     // clarity
-    implementation("com.microsoft.clarity:clarity-compose:3.4.1")
+    implementation(libs.clarity.compose)
 
     // startup
-    implementation("androidx.startup:startup-runtime:1.1.1")
+    implementation(libs.androidx.startup.runtime)
 
     // firebase
-    implementation(libs.firebase.bom)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.common.ktx)
     implementation(libs.firebase.crashlytics)
 
