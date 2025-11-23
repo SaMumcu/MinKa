@@ -1,8 +1,6 @@
 package com.cattishapps.minka.di
 
-import android.content.Context
 import androidx.room.Room
-import com.cattishapps.minka.data.dao.DayNoteDao
 import com.cattishapps.minka.data.repository.DayNoteRepository
 import com.cattishapps.minka.db.AppDatabase
 import com.cattishapps.minka.db.MIGRATION_1_2
@@ -11,77 +9,41 @@ import com.cattishapps.minka.domain.DeleteNoteUseCase
 import com.cattishapps.minka.domain.GetAllNotesUseCase
 import com.cattishapps.minka.domain.GetNotesByDateUseCase
 import com.cattishapps.minka.domain.UpdateNoteUseCase
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import com.cattishapps.minka.ui.weekscreen.DayNoteViewModel
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
+import org.koin.androidx.viewmodel.dsl.viewModel
 
-@Module
-@InstallIn(SingletonComponent::class)
-object AppModule {
+val appModule = module {
 
-    @Provides
-    @Singleton
-    fun providesLocalDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "day_note_db")
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "day_note_db"
+        )
             .fallbackToDestructiveMigration()
             .addMigrations(MIGRATION_1_2)
             .build()
     }
 
-    @Provides
-    @Singleton
-    fun providesDayNoteDao(db: AppDatabase): DayNoteDao {
-        return db.dayNoteDao()
-    }
+    single { get<AppDatabase>().dayNoteDao() }
 
-    @Provides
-    @Singleton
-    fun providesDayNoteRepository(
-        dao: DayNoteDao
-    ): DayNoteRepository {
-        return DayNoteRepository(dao)
-    }
+    single { DayNoteRepository(get()) }
 
-    @Provides
-    @Singleton
-    fun providesGetNotesByDateUseCase(
-        repository: DayNoteRepository
-    ): GetNotesByDateUseCase {
-        return GetNotesByDateUseCase(repository)
-    }
+    single { GetNotesByDateUseCase(get()) }
+    single { AddNoteUseCase(get()) }
+    single { GetAllNotesUseCase(get()) }
+    single { DeleteNoteUseCase(get()) }
+    single { UpdateNoteUseCase(get()) }
 
-    @Provides
-    @Singleton
-    fun providesAddNoteUseCase(
-        repository: DayNoteRepository
-    ): AddNoteUseCase {
-        return AddNoteUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun providesGetAllNotesUseCase(
-        repository: DayNoteRepository
-    ): GetAllNotesUseCase {
-        return GetAllNotesUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun providesDeleteNoteUseCase(
-        repository: DayNoteRepository
-    ): DeleteNoteUseCase {
-        return DeleteNoteUseCase(repository)
-    }
-
-    @Provides
-    @Singleton
-    fun providesUpdateNoteUseCase(
-        repository: DayNoteRepository
-    ): UpdateNoteUseCase {
-        return UpdateNoteUseCase(repository)
+    viewModel {
+        DayNoteViewModel(
+            getNotesByDateUseCase = get(),
+            addNoteUseCase = get(),
+            getAllNotesUseCase = get(),
+            deleteNoteByIdUseCase = get(),
+            updateNoteUseCase = get()
+        )
     }
 }

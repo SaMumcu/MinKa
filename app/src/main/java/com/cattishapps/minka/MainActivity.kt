@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
@@ -18,10 +19,8 @@ import com.cattishapps.minka.ui.weekscreen.WeekScreen
 import com.cattishapps.minka.ui.mainscreen.YearCalendar
 import com.cattishapps.minka.ui.theme.MinKaTheme
 import com.cattishapps.minka.util.Screen
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +31,7 @@ class MainActivity : ComponentActivity() {
             MinKaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding).statusBarsPadding()
                     ) {
                         NavHost(
                             navController = navController,

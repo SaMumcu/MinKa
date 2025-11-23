@@ -23,16 +23,12 @@
     @androidx.room.Dao <methods>;
 }
 
--keep class dagger.hilt.** { *; }
--dontwarn dagger.hilt.**
+
 -keep class javax.inject.** { *; }
--keep class dagger.** { *; }
 -dontwarn javax.inject.**
 -keepattributes RuntimeVisibleAnnotations
 -keep class com.cattishapps.minka.**_Factory { *; }
 -keep class com.cattishapps.minka.**_MembersInjector { *; }
-
--keep class * extends dagger.hilt.android.internal.lifecycle.HiltViewModelFactory { *; }
 
 -keep class com.cattishapps.MinKaApp { *; }
 

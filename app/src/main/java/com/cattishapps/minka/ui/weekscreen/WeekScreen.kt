@@ -51,7 +51,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.cattishapps.minka.R
 import com.cattishapps.minka.ui.theme.alfasLaboneFontFamily
@@ -67,6 +66,7 @@ import com.cattishapps.minka.ui.theme.Red
 import com.cattishapps.minka.util.Spacing
 import com.cattishapps.minka.util.WEEK_DAYS
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -88,7 +88,7 @@ fun DayCard(
     var selectedNoteId by remember { mutableStateOf<Int?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
-    val viewModel: DayNoteViewModel = hiltViewModel()
+    val viewModel: DayNoteViewModel = koinViewModel()
 
     Card(
         modifier = Modifier
@@ -306,7 +306,7 @@ fun IconWithText(text: String, iconResId: Int) {
 
 @Composable
 fun WeekScreen(navController: NavController, selectedDate: String) {
-    val viewModel: DayNoteViewModel = hiltViewModel()
+    val viewModel: DayNoteViewModel = koinViewModel()
     val snackbarHostState = remember { SnackbarHostState() }
     val localDate = LocalDate.parse(selectedDate)
     val weekDays = remember { getWeekDates(localDate) }

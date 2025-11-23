@@ -8,16 +8,15 @@ import com.cattishapps.minka.domain.DeleteNoteUseCase
 import com.cattishapps.minka.domain.GetAllNotesUseCase
 import com.cattishapps.minka.domain.GetNotesByDateUseCase
 import com.cattishapps.minka.domain.UpdateNoteUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 import java.time.LocalDate
-import javax.inject.Inject
 
-@HiltViewModel
-class DayNoteViewModel @Inject constructor(
+@KoinViewModel
+class DayNoteViewModel(
     private val getNotesByDateUseCase: GetNotesByDateUseCase,
     private val addNoteUseCase: AddNoteUseCase,
     private val getAllNotesUseCase: GetAllNotesUseCase,

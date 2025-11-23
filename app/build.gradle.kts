@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp")
     id("com.google.gms.google-services")
     alias(libs.plugins.firebase.crashlytics)
@@ -63,10 +62,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.nav)
 
-    //Dagger - Hilt
-    implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
-    ksp(libs.hilt.compiler)
+    // Koin
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.annotations)
+    ksp(libs.koin.ksp.compiler)
 
     // Room
     implementation(libs.androidx.room.runtime)

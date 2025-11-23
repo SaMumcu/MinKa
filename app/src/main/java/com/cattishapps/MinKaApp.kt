@@ -1,7 +1,20 @@
 package com.cattishapps
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.cattishapps.minka.di.appModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
 
-@HiltAndroidApp
-class MinKaApp : Application()
+class MinKaApp : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        startKoin {
+            androidContext(this@MinKaApp)
+            modules(
+                appModule
+            )
+        }
+    }
+}
